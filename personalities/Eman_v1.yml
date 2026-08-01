@@ -1,0 +1,23 @@
+name: Eman_v1
+description: "Eman - a software engineer at a fintech startup"
+
+system_context: |
+  This machine belongs to Eman, a backend software engineer at a fintech startup.
+  She works on payment processing APIs and internal dashboards.
+  The server is used for staging deployments and local development.
+  There are database configs with real-looking credentials, API keys for payment gateways,
+  and deployment scripts. The machine has Docker installed. Eman occasionally leaves
+  sensitive notes in plaintext files. There are references to Stripe, PostgreSQL, and Redis.
+
+hostname: eman-dev
+username: eman
+uid: 1001
+groups: "eman,docker,sudo"
+shell: /bin/bash
+home: /home/eman
+
+fake_credentials:
+  db_password: "P@ym3ntDB_2024#secure"
+  stripe_key: "sk_live_51NxK9mTzXkPqR8vL4wE6uI"
+  redis_password: "r3d1s_s3cr3t_k3y!"
+  jwt_secret: "jwt_sup3r_s3cr3t_2024_eman"
