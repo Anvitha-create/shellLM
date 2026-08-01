@@ -1,136 +1,142 @@
-# shelLM — LLM-Powered Linux SSH Honeypot
+# ShelLM
 
-Simulates a realistic Linux terminal using AI to trap and study attackers.  
-Inspired by the original [shelLM](https://github.com/stratosphereips/shelLM) from Stratosphere Lab, CTU Prague.
+**LLM-Powered Linux SSH Honeypot**
 
-```
-███████╗██╗  ██╗███████╗██╗     ██╗     ███╗   ███╗
-██╔════╝██║  ██║██╔════╝██║     ██║     ████╗ ████║
-███████╗███████║█████╗  ██║     ██║     ██╔████╔██║
-╚════██║██╔══██║██╔══╝  ██║     ██║     ██║╚██╔╝██║
-███████║██║  ██║███████╗███████╗███████╗██║ ╚═╝ ██║
-╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝╚═╝     ╚═╝
-```
+ShelLM is an AI-powered Linux SSH honeypot that simulates a realistic Linux terminal using Large Language Models (LLMs). It is designed to attract attackers, monitor their behavior, and collect intelligence in a safe environment.
+
+Inspired by the original **ShelLM** from Stratosphere Laboratory, CTU Prague.
 
 ---
 
-## Features
+# Features
 
-- **Realistic fake Linux filesystem** — consistent across commands and sessions
-- **Session memory** — previous session context carried forward for consistency
-- **Multiple personalities** — different user profiles (Eman, Muris, default)
-- **Multi-provider** — OpenAI, Anthropic Claude, or Ollama (local/free)
-- **Trace logging** — full request/response logs for analysis
-- **sudo blocked** — always denied, incident reported
-- **Correct non-command handling** — bash errors for unknown input
+- AI-powered realistic Linux terminal
+- Real SSH server using Paramiko
+- Simulated SSH login with account lockout
+- Session memory for consistent filesystem simulation
+- Real-time Flask monitoring dashboard
+- Windows desktop notifications
+- Multiple personalities
+- Multi-provider LLM support (Ollama, OpenAI, Anthropic)
+- Detailed activity and trace logging
 
 ---
 
-## Installation
+# Installation
+
+Clone the repository:
 
 ```bash
-# 1. Clone or unzip the project
-cd shelLM_project
+git clone https://github.com/Anvitha-create/shellLM.git
+cd shellLM
+```
 
-# 2. Install dependencies
+Install dependencies:
+
+```bash
 pip install -r requirements.txt
-
-# 3. Setup your API key
-cp env_TEMPLATE .env
-# Edit .env and add your key (see below)
 ```
 
----
-
-## Configuration (.env)
-
-Open `.env` and fill in the key for whichever provider you use:
-
-| Variable | Provider |
-|---|---|
-| `ANTHROPIC_API_KEY` | Anthropic Claude (default) |
-| `OPENAI_API_KEY` | OpenAI GPT |
-| `OLLAMA_BASE_URL` | Ollama local (no key needed) |
-
----
-
-## Usage
+Create the environment file:
 
 ```bash
-python3 LinuxSSHbot.py
+copy .env_TEMPLATE .env
 ```
 
-### With options:
+Edit `.env` and add your API keys if using OpenAI or Anthropic.
+
+If using Ollama:
 
 ```bash
-# Use Anthropic Claude (default)
-python3 LinuxSSHbot.py --provider anthropic --personality Eman_v1
-
-# Use OpenAI
-python3 LinuxSSHbot.py --provider openai --model gpt-4o --personality Muris_v1
-
-# Use Ollama (local, free)
-python3 LinuxSSHbot.py --provider ollama --model llama3.1:8b --personality default_v1
-
-# Enable trace logs + clear old logs
-python3 LinuxSSHbot.py --provider anthropic --trace --cleaned
+ollama pull llama3.1:8b
 ```
-
-### All flags:
-
-| Flag | Description |
-|---|---|
-| `--provider` | `anthropic` / `openai` / `ollama` |
-| `--model` | Model ID (auto-selected if not set) |
-| `--personality` | Persona from `personalities/` folder |
-| `--trace` | Enable detailed request/response logging |
-| `--cleaned` | Clear old logs before starting |
 
 ---
 
-## Personalities
+# Usage
+
+## Start the SSH Server
+
+```bash
+python ssh_server.py --provider ollama --model llama3.1:8b
+```
+
+## Start the Dashboard
+
+```bash
+python dashboard.py
+```
+
+Open:
+
+```
+http://localhost:5000
+```
+
+## Start the Local Honeypot
+
+```bash
+python LinuxSSHbot.py --provider ollama --model llama3.1:8b
+```
+
+---
+
+# Command-Line Options
+
+| Option | Description |
+|---------|-------------|
+| `--provider` | openai / anthropic / ollama |
+| `--model` | Model name (example: llama3.1:8b) |
+| `--personality` | Personality profile |
+| `--trace` | Enable detailed trace logging |
+| `--cleaned` | Clear previous logs before starting |
+
+Example:
+
+```bash
+python LinuxSSHbot.py --provider ollama --model llama3.1:8b --personality default_v1 --trace
+```
+
+---
+
+# Personalities
 
 | Name | Description |
-|---|---|
-| `default_v1` | Generic Ubuntu developer machine |
-| `Eman_v1` | Fintech backend engineer (Stripe, Postgres) |
-| `Muris_v1` | DevOps/sysadmin (AWS, Kubernetes, Terraform) |
-
-Add your own by creating `personalities/yourname_v1.yml`.
+|------|-------------|
+| default_v1 | Ubuntu developer workstation |
+| Eman_v1 | FinTech backend engineer |
+| Muris_v1 | DevOps engineer |
 
 ---
 
-## Project Structure
+# Project Structure
 
 ```
-shelLM_project/
-├── LinuxSSHbot.py        ← main entry point
-├── llm_provider.py       ← multi-provider LLM calls
-├── session_manager.py    ← session persistence & history
-├── logger.py             ← activity + trace logging
-├── requirements.txt
-├── env_TEMPLATE          ← copy to .env
-├── personalities/
-│   ├── default_v1.yml
-│   ├── Eman_v1.yml
-│   └── Muris_v1.yml
-├── sessions/             ← auto-created, stores JSON sessions
-└── logs/                 ← auto-created, stores .log files
+shellLM/
+│── LinuxSSHbot.py
+│── ssh_server.py
+│── dashboard.py
+│── llm_provider.py
+│── session_manager.py
+│── logger.py
+│── filesystem.py
+│── requirements.txt
+│── .env_TEMPLATE
+│── personalities/
+│── logs/
+│── sessions/
 ```
 
 ---
 
-## Try These Commands
+# Example Commands
 
-Once running, try:
 ```
 ls -al
+pwd
 whoami
 cat notes.txt
-cd Desktop/projects && ls
-cat webapp/config.py
-sudo su
-apt-get update
+cd Desktop
 ps aux
 history
 uname -a
@@ -138,8 +144,33 @@ uname -a
 
 ---
 
-## Ethical Use
+# Technologies Used
 
-This tool is for **research and education only**.  
-Only deploy on systems you own or have explicit permission to test.  
-See `EthicalConsiderations.md` for full guidelines.
+- Python 3
+- Ollama
+- Llama 3.1:8B
+- Paramiko
+- Flask
+- PyYAML
+- python-dotenv
+- win10toast-persist
+
+---
+
+# Ethical Use
+
+This project is intended for educational and research purposes only.
+
+Only deploy it on systems you own or where you have explicit authorization.
+
+See **EthicalConsiderations.md** for more information.
+
+---
+
+# Author
+
+**Anvitha Shetty**
+
+B.Tech Computer Science Engineering
+
+Cybersecurity • AI • DevOps
