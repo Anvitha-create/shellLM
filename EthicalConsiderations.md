@@ -19,4 +19,4 @@ shelLM is a research tool designed for cybersecurity education and honeypot rese
 - Review logs ethically — treat any captured data responsibly
 - Follow your institution's ethical guidelines for security research
 
-Developed at Stratosphere Laboratory, Czech Technical University in Prague.
+
